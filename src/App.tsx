@@ -1,58 +1,76 @@
-import {createBrowserRouter,RouterProvider,Navigate,Outlet, } from 'react-router-dom';
+import React from 'react';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+  Outlet,
+} from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 
-/**
- * Componente de Layout (similar ao seu exemplo com Navbar)
- * Inclui o Outlet, que é onde as rotas "filhas" (LoginPage, etc.) serão renderizadas.
- */
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+
 function RootLayout() {
   return (
-    // Aplicando um estilo de fundo base, similar ao seu exemplo
     <div className="min-h-screen bg-gray-50 font-sans">
-      {/* <Navbar /> -- Poderíamos adicionar um Navbar aqui no futuro */}
       <main>
-        {/* As páginas (LoginPage, RegisterPage, etc.) serão renderizadas aqui */}
         <Outlet />
       </main>
     </div>
   );
 }
 
-/**
- * Definição das rotas usando a nova API createBrowserRouter
- */
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-600 text-lg">Carregando...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <RootLayout />, // O RootLayout aplica-se a todas as rotas
-    errorElement: <NotFoundPage />, // Página de erro global
+    element: (
+      <AuthProvider>
+        <RootLayout />
+      </AuthProvider>
+    ),
+    errorElement: <NotFoundPage />,
     children: [
-      // A rota "index" (/) redireciona para /login
       { index: true, element: <Navigate to="/login" replace /> },
-
-      // Rotas Públicas
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
-
-      // Rota Privada (por agora)
-      // NOTA: No próximo passo, vamos proteger esta rota.
-      { path: 'dashboard', element: <DashboardPage /> },
+      {
+        path: 'dashboard',
+        element: (
+          <PrivateRoute>
+            <DashboardPage />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
-  // A rota 404 "*" é tratada pelo errorElement no router principal
 ]);
 
-/**
- * Componente principal da aplicação
- */
 function App() {
   return (
     <>
-      {/* O ToastContainer permite que as notificações apareçam em qualquer lugar */}
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -65,8 +83,6 @@ function App() {
         pauseOnHover
         theme="light"
       />
-
-      {/* O RouterProvider injeta as rotas na nossa aplicação */}
       <RouterProvider router={router} />
     </>
   );
