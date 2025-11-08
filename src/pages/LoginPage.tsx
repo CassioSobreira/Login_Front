@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  // O 'loading' local foi removido, usamos o global do contexto
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +30,7 @@ export default function LoginPage() {
       password,
     });
 
-    // 3. Lida com a resposta
+    
     if (data && data.token && data.user) {
       login(data.token, data.user); 
       toast.success('Login realizado com sucesso!');
@@ -60,7 +60,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="seu.email@exemplo.com"
-              disabled={loading} // 5. Usa o loading global
+              disabled={loading} 
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -74,7 +74,7 @@ export default function LoginPage() {
                 required
                 placeholder="••••••••"
                 minLength={6}
-                disabled={loading} // 5. Usa o loading global
+                disabled={loading} 
                 className="block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
               />
               <button
@@ -88,7 +88,7 @@ export default function LoginPage() {
           </div>
           <button
             type="submit"
-            disabled={loading} // 5. Usa o loading global
+            disabled={loading} 
             className="w-full py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors disabled:bg-gray-400"
           >
             {loading ? 'Entrando...' : 'Entrar'}

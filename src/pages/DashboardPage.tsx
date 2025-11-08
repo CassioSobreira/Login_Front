@@ -1,12 +1,10 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link, Outlet, useLocation } from 'react-router-dom'; // 1. Importar Outlet e useLocation
+import { Link, Outlet, useLocation } from 'react-router-dom'; 
 
 export default function DashboardPage() {
   const { logout, user } = useAuth(); 
-  const location = useLocation(); // Hook para saber a página atual
-
-  // Função helper para destacar o link ativo na Navbar
+  const location = useLocation(); 
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -24,12 +22,12 @@ export default function DashboardPage() {
            style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%)' }}>
       </div>
 
-      {/* --- HEADER (NAVBAR) ATUALIZADA COM NOVOS LINKS --- */}
+      
       <header className="bg-white/95 shadow-md sticky top-0 z-10 backdrop-blur-sm">
         <nav className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             
-            {/* Lado Esquerdo: Marca e Links de Navegação */}
+            
             <div className="flex items-center gap-6">
               <Link to="/dashboard" className="flex items-center gap-2">
                 <svg className="w-8 h-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -40,7 +38,7 @@ export default function DashboardPage() {
               
               <div className="hidden md:flex gap-4">
                 <Link 
-                  to="/dashboard" // Link para a lista (rota index)
+                  to="/dashboard" 
                   className={`text-sm font-medium px-1 py-2 ${
                     isActive('/dashboard') 
                       ? 'border-b-2 border-indigo-500 text-gray-900' 
@@ -50,7 +48,7 @@ export default function DashboardPage() {
                   Meus Filmes
                 </Link>
                 <Link 
-                  to="/dashboard/add" // 2. NOVO LINK para Adicionar Filme
+                  to="/dashboard/add" 
                   className={`text-sm font-medium px-1 py-2 ${
                     isActive('/dashboard/add') 
                       ? 'border-b-2 border-indigo-500 text-gray-900' 
@@ -62,7 +60,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Lado Direito: Utilizador e Logout */}
+            
             <div className="flex items-center gap-4">
               <span className="hidden sm:block text-sm text-gray-700">
                 Olá, {user?.name || 'Usuário'}
@@ -83,12 +81,12 @@ export default function DashboardPage() {
         </nav>
       </header>
 
-      {/* 3. O <Outlet /> renderiza a rota filha (MovieList ou AddMoviePage) */}
+      
       <main className="relative z-1 max-w-5xl mx-auto mt-6 p-4">
         <Outlet />
       </main>
 
-      {/* Espaçamento inferior */}
+      
       <div className="h-20 relative z-1"></div> 
     </div>
   );

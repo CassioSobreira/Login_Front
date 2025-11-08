@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom'; // Importar para redirecionar
+import { useNavigate } from 'react-router-dom'; 
 
-// (Interface de dados do formulário)
+
 interface MovieFormData {
   title: string;
   director: string;
@@ -12,7 +12,7 @@ interface MovieFormData {
   rating: string;
 }
 
-// Interface do Filme (DEVE ser igual à do seu backend)
+
 interface IMovie {
   id: number;
   title: string;
@@ -24,7 +24,7 @@ interface IMovie {
 
 export default function AddMoviePage() {
   const { api, loading } = useAuth();
-  const navigate = useNavigate(); // Para redirecionar após o sucesso
+  const navigate = useNavigate(); 
   
   const [newMovie, setNewMovie] = useState<MovieFormData>({
     title: '', director: '', year: '', genre: '', rating: ''
@@ -54,7 +54,6 @@ export default function AddMoviePage() {
     if (data && data.movie) { 
       toast.success('Novo filme adicionado à sua lista!'); 
       clearCreateForm(); 
-      // Redireciona de volta para a lista de filmes
       navigate('/dashboard'); 
     }
   };
@@ -65,7 +64,7 @@ export default function AddMoviePage() {
         Adicionar Novo Filme
       </h2>
       <form onSubmit={handleCreateMovie} className="space-y-4">
-        {/* Linha 1: Título */}
+        
         <div>
           <label htmlFor="title-create" className="block text-sm font-medium text-gray-700">Título*</label>
           <input
@@ -77,7 +76,7 @@ export default function AddMoviePage() {
             required disabled={loading}
           />
         </div>
-        {/* Linha 2: Realizador e Género */}
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="director-create" className="block text-sm font-medium text-gray-700">Realizador</label>
@@ -102,7 +101,7 @@ export default function AddMoviePage() {
             />
           </div>
         </div>
-        {/* Linha 3: Ano e Rating */}
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="year-create" className="block text-sm font-medium text-gray-700">Ano</label>
