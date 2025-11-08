@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {
   createBrowserRouter,
   RouterProvider,
@@ -6,22 +6,33 @@ import {
   Outlet,
 } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+// (O CSS do Toastify deve estar no main.tsx)
+
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage'; 
 import NotFoundPage from './pages/NotFoundPage';
 import MovieList from './pages/MovieList';
-import AddMoviePage from './pages/AddMoviePage'; 
-import { AuthProvider, useAuth } from './contexts/AuthContext'; 
-import ProtectedRoute from './components/ProtectedRoute';
+import AddMoviePage from './pages/AddMoviePage'; // (Verifique o caminho/nome da pasta se necessário)
 
+// Importa o AuthProvider (do seu ficheiro AuthContext.tsx)
+import { AuthProvider } from './contexts/AuthContext'; 
+// Importa o SEU ProtectedRoute.tsx (que está correto)
+import ProtectedRoute from './components/ProtectedRoute'; 
 
+/**
+ * Layout base da aplicação
+ * (AuthProvider deve "embrulhar" este layout)
+ */
 function RootLayout() {
   return (
-    
+    // O AuthProvider "embrulha" (wraps) o RootLayout
+    // para que todas as páginas tenham acesso ao 'useAuth()'
     <AuthProvider>
       <div className="min-h-screen bg-gray-50 font-sans">
         <main>
+          {/* As páginas (LoginPage, DashboardPage, etc.) 
+              serão renderizadas aqui */}
           <Outlet />
         </main>
       </div>
@@ -29,64 +40,55 @@ function RootLayout() {
   );
 }
 
+// A função 'PrivateRoute' que estava aqui foi REMOVIDA
+// porque agora está em 'src/components/ProtectedRoute.tsx'
 
-function PrivateRoute() { 
-  const { isAuthenticated, initialLoading } = useAuth(); 
-
-  if (initialLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-600 text-lg">Carregando...</p>
-      </div>
-    );
-  }
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return <Outlet />; 
-}
-
+/**
+ * Define as rotas principais
+ */
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <RootLayout />, 
+    element: <RootLayout />, // O RootLayout (que contém o AuthProvider) é o elemento pai
     errorElement: <NotFoundPage />,
     children: [
       { index: true, element: <Navigate to="/login" replace /> },
       
-      
+      // Rotas Públicas (filhas diretas do RootLayout)
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       
+      // --- CORREÇÃO AQUI ---
+      // Rotas Privadas (agora filhas do ProtectedRoute)
       {
-        element: <ProtectedRoute />, 
+        element: <ProtectedRoute />, // O "segurança" fica aqui
         children: [
-          
+          // Todas as rotas aqui dentro exigem login e serão renderizadas pelo <Outlet> do ProtectedRoute
           {
             path: 'dashboard',
-            element: <DashboardPage />, 
-            
-            
+            element: <DashboardPage />, // O Layout (Navbar + Fundo + Outlet)
+            // Rotas filhas do Dashboard (Meus Filmes, Adicionar Filme)
             children: [
               { 
-                index: true, 
+                index: true, // A rota /dashboard (index) mostra a lista
                 element: <MovieList /> 
               }, 
               { 
-                path: 'add', 
+                path: 'add', // A rota /dashboard/add mostra o formulário
                 element: <AddMoviePage /> 
               }
             ]
-            
           },
-          
+          // { path: 'profile', element: <ProfilePage /> } // Exemplo de outra rota protegida
         ],
       },
     ],
   },
 ]);
 
+/**
+ * App principal
+ */
 function App() {
   return (
     <>
