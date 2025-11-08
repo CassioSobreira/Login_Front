@@ -10,24 +10,56 @@ import { ToastContainer } from 'react-toastify';
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import DashboardPage from './pages/DashboardPage';
+import DashboardPage from './pages/DashboardPage'; // O Layout
 import NotFoundPage from './pages/NotFoundPage';
 
-// Importa o AuthProvider e o novo ProtectedRoute
-import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute'; // O nosso "segurança"
+// 1. IMPORTAR AS NOVAS PÁGINAS FILHAS
+import MovieList from './pages/MovieList';
+import AddMoviePage from './pages/AddMoviePage'; // (Verifique o nome desta pasta)
+
+// Importa o AuthProvider e o PrivateRoute
+// (Assumindo que estão em 'src/contexts/' e 'src/components/')
+import { AuthProvider, useAuth } from './contexts/AuthContext'; 
+import ProtectedRoute from './components/ProtectedRoute';
+
 
 /**
  * Layout base da aplicação
  */
 function RootLayout() {
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
-      <main>
-        <Outlet />
-      </main>
-    </div>
+    // O AuthProvider DEVE "embrulhar" (wrap) o RootLayout
+    // para que todas as páginas tenham acesso ao 'useAuth()'
+    <AuthProvider>
+      <div className="min-h-screen bg-gray-50 font-sans">
+        <main>
+          {/* As páginas (LoginPage, DashboardPage, etc.) 
+              serão renderizadas aqui */}
+          <Outlet />
+        </main>
+      </div>
+    </AuthProvider>
   );
+}
+
+/**
+ * Rota protegida (O seu "segurança")
+ */
+function PrivateRoute() { 
+  const { isAuthenticated, initialLoading } = useAuth(); 
+
+  if (initialLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-gray-600 text-lg">Carregando...</p>
+      </div>
+    );
+  }
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <Outlet />; // Renderiza as rotas filhas (DashboardPage)
 }
 
 /**
@@ -36,28 +68,38 @@ function RootLayout() {
 const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      // O AuthProvider "embrulha" (wraps) o RootLayout
-      // para que todas as páginas tenham acesso ao 'useAuth()'
-      <AuthProvider>
-        <RootLayout />
-      </AuthProvider>
-    ),
+    element: <RootLayout />, // O RootLayout agora contém o AuthProvider
     errorElement: <NotFoundPage />,
     children: [
-      // Rotas filhas do RootLayout
       { index: true, element: <Navigate to="/login" replace /> },
       
       // Rotas Públicas
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       
-      // Rotas Privadas (agora protegidas)
+      // --- ROTAS PROTEGIDAS (CORRIGIDAS) ---
       {
-        element: <ProtectedRoute />, // O "segurança" fica aqui
+        element: <ProtectedRoute />, // O "segurança"
         children: [
-          // Todas as rotas aqui dentro exigem login
-          { path: 'dashboard', element: <DashboardPage /> },
+          // O segurança protege tudo aqui dentro
+          {
+            path: 'dashboard',
+            element: <DashboardPage />, // O Layout (Navbar + Fundo + Outlet)
+            
+            // --- CORREÇÃO AQUI ---
+            // Rotas filhas que serão renderizadas DENTRO do <Outlet> do DashboardPage
+            children: [
+              { 
+                index: true, // A rota /dashboard (index) mostra a lista
+                element: <MovieList /> 
+              }, 
+              { 
+                path: 'add', // A rota /dashboard/add mostra o formulário
+                element: <AddMoviePage /> 
+              }
+            ]
+            // --- FIM DA CORREÇÃO ---
+          },
           // { path: 'profile', element: <ProfilePage /> } // Exemplo
         ],
       },
