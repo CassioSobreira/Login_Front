@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Importa o hook correto
+import { useAuth } from '../contexts/AuthContext'; 
 import { toast } from 'react-toastify';
 
-// O tipo de resposta esperado do seu backend de login
+
 type LoginResponse = {
   token: string;
   user: { id: number | string; name: string; email: string };
 };
 
 export default function LoginPage() {
-  // 1. Usa o contexto
-  const { login, api, loading } = useAuth(); // Pega 'login', 'api' e 'loading' global
+  const { login, api, loading } = useAuth(); 
   const navigate = useNavigate();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +24,7 @@ export default function LoginPage() {
       return;
     }
 
-    // 2. Chama a função 'api' (o loading global é ativado)
+    
     const data = await api<LoginResponse>('POST', '/auth/login', {
       email,
       password,
@@ -34,13 +32,11 @@ export default function LoginPage() {
 
     // 3. Lida com a resposta
     if (data && data.token && data.user) {
-      // 4. Chama a função 'login' do contexto para guardar o token e o user
       login(data.token, data.user); 
-      
       toast.success('Login realizado com sucesso!');
-      navigate('/dashboard'); // Redireciona para a área logada
+      navigate('/dashboard'); 
     }
-    // (Se 'data' for null, o 'api' wrapper já mostrou o toast de erro)
+ 
   };
 
   return (

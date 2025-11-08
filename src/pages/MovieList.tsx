@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
-// (As interfaces podem ser movidas para um ficheiro 'interfaces.ts' no futuro)
+
 interface IMovie {
   id: number;
   title: string;
@@ -22,15 +22,13 @@ interface MovieFormData {
 export default function MovieList() {
   const { api, loading } = useAuth(); 
   const [movies, setMovies] = useState<IMovie[]>([]);
-  
-  // Estados do Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentMovie, setCurrentMovie] = useState<IMovie | null>(null);
   const [editFormData, setEditFormData] = useState<MovieFormData>({
     title: '', director: '', year: '', genre: '', rating: ''
   });
 
-  // Função para buscar filmes
+  
   const fetchMovies = async () => {
     console.log('Buscando filmes da API...');
     const data = await api<IMovie[]>('GET', '/movies');
@@ -39,13 +37,12 @@ export default function MovieList() {
     }
   };
 
-  // Buscar filmes quando a página carregar
+  
   useEffect(() => {
     fetchMovies();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []); 
 
-  // Lógica de Apagar
   const handleDeleteMovie = async (id: number) => {
     if (window.confirm('Tem certeza que deseja apagar este filme?')) {
       const data = await api('DELETE', `/movies/${id}`);
@@ -56,7 +53,6 @@ export default function MovieList() {
     }
   };
 
-  // --- Lógica do Modal de ATUALIZAÇÃO ---
   const handleOpenEditModal = (movie: IMovie) => {
     setCurrentMovie(movie); 
     setEditFormData({
@@ -110,7 +106,7 @@ export default function MovieList() {
 
   return (
     <>
-      {/* Lista de Filmes */}
+      
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Seus Filmes</h2>
         {loading && movies.length === 0 && (
@@ -126,7 +122,7 @@ export default function MovieList() {
                 key={movie.id} 
                 className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 rounded-md border hover:bg-gray-100"
               >
-                {/* Informações do Filme */}
+                
                 <div className="mb-4 sm:mb-0">
                   <div className="flex items-center gap-3">
                     <span className="font-medium text-lg text-gray-900">{movie.title}</span>
@@ -139,7 +135,7 @@ export default function MovieList() {
                       </span>
                     )}
                   </div>
-                  {/* Detalhes (Ano e Realizador) */}
+                  
                   <div className="text-sm text-gray-500 mt-1">
                     {movie.year && (
                       <span>{movie.year}</span>
@@ -153,7 +149,6 @@ export default function MovieList() {
                   </div>
                 </div>
                 
-                {/* Botões de Ação */}
                 <div className="flex gap-3 flex-shrink-0">
                   <button
                     onClick={() => handleOpenEditModal(movie)}
@@ -175,7 +170,7 @@ export default function MovieList() {
         </ul>
       </div>
 
-      {/* --- MODAL DE EDIÇÃO --- */}
+      
       {isModalOpen && currentMovie && (
         <div
           className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4"
@@ -187,7 +182,7 @@ export default function MovieList() {
           >
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Editar Filme: {currentMovie.title}</h2>
             <form onSubmit={handleUpdateMovie} className="space-y-4">
-              {/* (Formulário de edição completo...) */}
+              
               <div>
                 <label htmlFor="title-edit" className="block text-sm font-medium text-gray-700">Título*</label>
                 <input

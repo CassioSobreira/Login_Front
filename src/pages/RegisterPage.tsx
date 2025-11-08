@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Importa o hook correto
+import { useAuth } from '../contexts/AuthContext'; 
 import { toast } from 'react-toastify';
 
 export default function RegisterPage() {
-  // 1. Usa o contexto
-  const { api, loading } = useAuth(); // Pega 'api' e 'loading' global
+  const { api, loading } = useAuth(); 
   const navigate = useNavigate();
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  // O 'loading' local foi removido
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,15 +23,15 @@ export default function RegisterPage() {
       return;
     }
 
-    // 2. Chama a função 'api' (o loading global é ativado)
+    
     const data = await api('POST', '/auth/register', { name, email, password });
 
-    // 3. Lida com o sucesso
-    if (data !== null) { // Se data não for null, a chamada API foi bem-sucedida
+    
+    if (data !== null) { 
       toast.success('Conta criada com sucesso! Por favor, faça login.');
-      navigate('/login'); // Redireciona para o login
+      navigate('/login'); 
     }
-    // (Se 'data' for null, o 'api' wrapper já mostrou o toast de erro)
+    
   };
 
   return (
@@ -57,7 +55,7 @@ export default function RegisterPage() {
               onChange={(e) => setName(e.target.value)}
               required
               placeholder="Seu nome completo"
-              disabled={loading} // 4. Usa o loading global
+              disabled={loading} 
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -69,7 +67,7 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="seu.email@exemplo.com"
-              disabled={loading} // 4. Usa o loading global
+              disabled={loading} 
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -83,7 +81,7 @@ export default function RegisterPage() {
                 required
                 minLength={6}
                 placeholder="••••••••"
-                disabled={loading} // 4. Usa o loading global
+                disabled={loading} 
                 className="block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
               />
               <button
@@ -97,7 +95,7 @@ export default function RegisterPage() {
           </div>
           <button
             type="submit"
-            disabled={loading} // 4. Usa o loading global
+            disabled={loading} 
             className="w-full py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors disabled:bg-gray-400"
           >
             {loading ? 'Registrando...' : 'Criar Conta'}
