@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {
   createBrowserRouter,
   RouterProvider,
@@ -12,13 +12,12 @@ import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 import MovieList from './pages/MovieList';
 import AddMoviePage from './pages/AddMoviePage'; 
-import { AuthProvider, useAuth } from './contexts/AuthContext'; 
-import ProtectedRoute from './components/ProtectedRoute';
-
+import { AuthProvider } from './contexts/AuthContext'; 
+import ProtectedRoute from './components/ProtectedRoute'; 
 
 function RootLayout() {
   return (
-    
+
     <AuthProvider>
       <div className="min-h-screen bg-gray-50 font-sans">
         <main>
@@ -27,24 +26,6 @@ function RootLayout() {
       </div>
     </AuthProvider>
   );
-}
-
-
-function PrivateRoute() { 
-  const { isAuthenticated, initialLoading } = useAuth(); 
-
-  if (initialLoading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-600 text-lg">Carregando...</p>
-      </div>
-    );
-  }
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return <Outlet />; 
 }
 
 const router = createBrowserRouter([
@@ -59,6 +40,7 @@ const router = createBrowserRouter([
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       
+      
       {
         element: <ProtectedRoute />, 
         children: [
@@ -66,8 +48,6 @@ const router = createBrowserRouter([
           {
             path: 'dashboard',
             element: <DashboardPage />, 
-            
-            
             children: [
               { 
                 index: true, 
@@ -78,7 +58,6 @@ const router = createBrowserRouter([
                 element: <AddMoviePage /> 
               }
             ]
-            
           },
           
         ],
