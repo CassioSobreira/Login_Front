@@ -6,15 +6,20 @@ import {
   Outlet,
 } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// (O CSS do Toastify deve estar no main.tsx)
 
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import NotFoundPage from './pages/NotFoundPage';
 
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+// Importa o AuthProvider e o novo ProtectedRoute
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute'; // O nosso "segurança"
 
+/**
+ * Layout base da aplicação
+ */
 function RootLayout() {
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -25,49 +30,44 @@ function RootLayout() {
   );
 }
 
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-600 text-lg">Carregando...</p>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
-}
-
+/**
+ * Define as rotas principais
+ */
 const router = createBrowserRouter([
   {
     path: '/',
     element: (
+      // O AuthProvider "embrulha" (wraps) o RootLayout
+      // para que todas as páginas tenham acesso ao 'useAuth()'
       <AuthProvider>
         <RootLayout />
       </AuthProvider>
     ),
     errorElement: <NotFoundPage />,
     children: [
+      // Rotas filhas do RootLayout
       { index: true, element: <Navigate to="/login" replace /> },
+      
+      // Rotas Públicas
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
+      
+      // Rotas Privadas (agora protegidas)
       {
-        path: 'dashboard',
-        element: (
-          <PrivateRoute>
-            <DashboardPage />
-          </PrivateRoute>
-        ),
+        element: <ProtectedRoute />, // O "segurança" fica aqui
+        children: [
+          // Todas as rotas aqui dentro exigem login
+          { path: 'dashboard', element: <DashboardPage /> },
+          // { path: 'profile', element: <ProfilePage /> } // Exemplo
+        ],
       },
     ],
   },
 ]);
 
+/**
+ * App principal
+ */
 function App() {
   return (
     <>
