@@ -1,26 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import type { IMovie, MovieFormData } from '../contexts/AuthContext'; 
 import { toast } from 'react-toastify';
 
-
-interface IMovie {
-  id: number;
-  title: string;
-  director?: string | null;
-  year?: number | null;
-  genre?: string | null;
-  rating?: number | null;
-}
-interface MovieFormData {
-  title: string;
-  director: string;
-  year: string;
-  genre: string;
-  rating: string;
-}
-
 export default function MovieList() {
-  const { api, loading } = useAuth(); 
+  const { api, loading } = useAuth();
   const [movies, setMovies] = useState<IMovie[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentMovie, setCurrentMovie] = useState<IMovie | null>(null);
@@ -28,7 +12,6 @@ export default function MovieList() {
     title: '', director: '', year: '', genre: '', rating: ''
   });
 
-  
   const fetchMovies = async () => {
     console.log('Buscando filmes da API...');
     const data = await api<IMovie[]>('GET', '/movies');
@@ -37,16 +20,14 @@ export default function MovieList() {
     }
   };
 
-  
   useEffect(() => {
     fetchMovies();
-    
-  }, []); 
+  }, []);
 
-  const handleDeleteMovie = async (id: number) => {
+  const handleDeleteMovie = async (id: number | string) => {
     if (window.confirm('Tem certeza que deseja apagar este filme?')) {
       const data = await api('DELETE', `/movies/${id}`);
-      if (data) { 
+      if (data) {
         toast.success('Filme apagado com sucesso.');
         setMovies(movies.filter((movie) => movie.id !== id));
       }
@@ -54,7 +35,7 @@ export default function MovieList() {
   };
 
   const handleOpenEditModal = (movie: IMovie) => {
-    setCurrentMovie(movie); 
+    setCurrentMovie(movie);
     setEditFormData({
       title: movie.title || '',
       director: movie.director || '',
@@ -62,7 +43,7 @@ export default function MovieList() {
       genre: movie.genre || '',
       rating: movie.rating?.toString() || '',
     });
-    setIsModalOpen(true); 
+    setIsModalOpen(true);
   };
 
   const handleCloseModal = () => {
@@ -70,17 +51,17 @@ export default function MovieList() {
     setCurrentMovie(null);
     setEditFormData({ title: '', director: '', year: '', genre: '', rating: '' });
   };
-  
+
   const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-     setEditFormData({
-        ...editFormData,
-        [e.target.name]: e.target.value
-     });
+    setEditFormData({
+      ...editFormData,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleUpdateMovie = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentMovie) return; 
+    if (!currentMovie) return;
 
     if (!editFormData.title.trim()) {
       toast.warn('O título é obrigatório.');
@@ -98,15 +79,14 @@ export default function MovieList() {
     const data = await api<{ message: string, movie: IMovie }>('PATCH', `/movies/${currentMovie.id}`, updatedData);
 
     if (data && data.movie) {
-      toast.success('Filme atualizado com sucesso!'); 
+      toast.success('Filme atualizado com sucesso!');
       setMovies(movies.map(movie => movie.id === data.movie.id ? data.movie : movie));
-      handleCloseModal(); 
+      handleCloseModal();
     }
   };
 
   return (
     <>
-      
       <div className="bg-white shadow rounded-lg p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">Seus Filmes</h2>
         {loading && movies.length === 0 && (
@@ -119,10 +99,9 @@ export default function MovieList() {
           {movies.length > 0 &&
             movies.map((movie) => (
               <li
-                key={movie.id} 
+                key={movie.id.toString()}
                 className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 bg-gray-50 rounded-md border hover:bg-gray-100"
               >
-                
                 <div className="mb-4 sm:mb-0">
                   <div className="flex items-center gap-3">
                     <span className="font-medium text-lg text-gray-900">{movie.title}</span>
@@ -135,7 +114,6 @@ export default function MovieList() {
                       </span>
                     )}
                   </div>
-                  
                   <div className="text-sm text-gray-500 mt-1">
                     {movie.year && (
                       <span>{movie.year}</span>
@@ -148,7 +126,6 @@ export default function MovieList() {
                     )}
                   </div>
                 </div>
-                
                 <div className="flex gap-3 flex-shrink-0">
                   <button
                     onClick={() => handleOpenEditModal(movie)}
@@ -170,19 +147,17 @@ export default function MovieList() {
         </ul>
       </div>
 
-      
       {isModalOpen && currentMovie && (
         <div
           className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4"
-          onClick={handleCloseModal} 
+          onClick={handleCloseModal}
         >
           <div
             className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6"
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Editar Filme: {currentMovie.title}</h2>
             <form onSubmit={handleUpdateMovie} className="space-y-4">
-              
               <div>
                 <label htmlFor="title-edit" className="block text-sm font-medium text-gray-700">Título*</label>
                 <input

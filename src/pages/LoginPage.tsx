@@ -1,21 +1,14 @@
+
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; 
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
-
-type LoginResponse = {
-  token: string;
-  user: { id: number | string; name: string; email: string };
-};
-
 export default function LoginPage() {
-  const { login, api, loading } = useAuth(); 
-  const navigate = useNavigate();
+  const { login, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,31 +17,25 @@ export default function LoginPage() {
       return;
     }
 
-    
-    const data = await api<LoginResponse>('POST', '/auth/login', {
-      email,
-      password,
-    });
-
-    
-    if (data && data.token && data.user) {
-      login(data.token, data.user); 
+    try {
+      await login(email, password);
       toast.success('Login realizado com sucesso!');
-      navigate('/dashboard'); 
+    } catch (error) {
+      console.error("Falha no login (tratada e mostrada pelo AuthContext)");
     }
- 
   };
 
   return (
     <div
-      className="flex min-h-screen flex-col justify-center items-center p-4"
-      style={{
-        backgroundImage: "url('/images/background-image-login-register.png')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
+      className="
+        flex min-h-screen flex-col justify-center items-center p-4
+        bg-cover bg-center bg-fixed
+        bg-[url('/images/background-image-login-register-mobile.jpg')]
+        md:bg-[url('/images/background-image-login-register.png')]
+      "
     >
       <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
+      
       <div className="w-full max-w-md bg-white rounded-lg shadow-xl p-8 z-10">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -60,7 +47,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="seu.email@exemplo.com"
-              disabled={loading} 
+              disabled={loading}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
             />
           </div>
@@ -74,7 +61,7 @@ export default function LoginPage() {
                 required
                 placeholder="••••••••"
                 minLength={6}
-                disabled={loading} 
+                disabled={loading}
                 className="block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
               />
               <button
@@ -88,7 +75,7 @@ export default function LoginPage() {
           </div>
           <button
             type="submit"
-            disabled={loading} 
+            disabled={loading}
             className="w-full py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors disabled:bg-gray-400"
           >
             {loading ? 'Entrando...' : 'Entrar'}

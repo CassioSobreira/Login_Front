@@ -1,35 +1,17 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import type { IMovie, MovieFormData } from '../contexts/AuthContext'; 
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom'; 
-
-
-interface MovieFormData {
-  title: string;
-  director: string;
-  year: string;
-  genre: string;
-  rating: string;
-}
-
-
-interface IMovie {
-  id: number;
-  title: string;
-  director?: string | null;
-  year?: number | null;
-  genre?: string | null;
-  rating?: number | null;
-}
+import { useNavigate } from 'react-router-dom';
 
 export default function AddMoviePage() {
   const { api, loading } = useAuth();
-  const navigate = useNavigate(); 
-  
+  const navigate = useNavigate();
+
   const [newMovie, setNewMovie] = useState<MovieFormData>({
     title: '', director: '', year: '', genre: '', rating: ''
   });
-
+  
   const clearCreateForm = () => {
     setNewMovie({ title: '', director: '', year: '', genre: '', rating: '' });
   };
@@ -50,11 +32,11 @@ export default function AddMoviePage() {
     };
 
     const data = await api<{ message: string, movie: IMovie }>('POST', '/movies', movieData);
-      
-    if (data && data.movie) { 
-      toast.success('Novo filme adicionado à sua lista!'); 
-      clearCreateForm(); 
-      navigate('/dashboard'); 
+
+    if (data && data.movie) {
+      toast.success('Novo filme adicionado à sua lista!');
+      clearCreateForm();
+      navigate('/dashboard');
     }
   };
 
@@ -64,26 +46,24 @@ export default function AddMoviePage() {
         Adicionar Novo Filme
       </h2>
       <form onSubmit={handleCreateMovie} className="space-y-4">
-        
         <div>
           <label htmlFor="title-create" className="block text-sm font-medium text-gray-700">Título*</label>
           <input
             type="text" id="title-create" name="title"
             value={newMovie.title}
-            onChange={(e) => setNewMovie({...newMovie, title: e.target.value})}
+            onChange={(e) => setNewMovie({ ...newMovie, title: e.target.value })}
             placeholder="Ex: Duna: Parte 2"
             className="mt-1 flex-grow px-4 py-2 border rounded-md w-full"
             required disabled={loading}
           />
         </div>
-        
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="director-create" className="block text-sm font-medium text-gray-700">Realizador</label>
             <input
               type="text" id="director-create" name="director"
               value={newMovie.director}
-              onChange={(e) => setNewMovie({...newMovie, director: e.target.value})}
+              onChange={(e) => setNewMovie({ ...newMovie, director: e.target.value })}
               placeholder="Ex: Denis Villeneuve"
               className="mt-1 flex-grow px-4 py-2 border rounded-md w-full"
               disabled={loading}
@@ -94,21 +74,20 @@ export default function AddMoviePage() {
             <input
               type="text" id="genre-create" name="genre"
               value={newMovie.genre}
-              onChange={(e) => setNewMovie({...newMovie, genre: e.target.value})}
+              onChange={(e) => setNewMovie({ ...newMovie, genre: e.target.value })}
               placeholder="Ex: Ficção Científica"
               className="mt-1 flex-grow px-4 py-2 border rounded-md w-full"
               disabled={loading}
             />
           </div>
         </div>
-        
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="year-create" className="block text-sm font-medium text-gray-700">Ano</label>
             <input
               type="number" id="year-create" name="year"
               value={newMovie.year}
-              onChange={(e) => setNewMovie({...newMovie, year: e.target.value})}
+              onChange={(e) => setNewMovie({ ...newMovie, year: e.target.value })}
               placeholder="Ex: 2024"
               className="mt-1 flex-grow px-4 py-2 border rounded-md w-full"
               disabled={loading}
@@ -119,7 +98,7 @@ export default function AddMoviePage() {
             <input
               type="number" id="rating-create" name="rating"
               value={newMovie.rating}
-              onChange={(e) => setNewMovie({...newMovie, rating: e.target.value})}
+              onChange={(e) => setNewMovie({ ...newMovie, rating: e.target.value })}
               placeholder="Ex: 9"
               min="1" max="10" step="1"
               className="mt-1 flex-grow px-4 py-2 border rounded-md w-full"
